@@ -25,47 +25,22 @@
           <li class="nav-item active">
             <a class="nav-link" href="/level1">Home</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" data-toggle="modal" data-target="#loginModal" href="">Login</a>
-          </li>
         </ul>
       </div>
     </div>
   </nav>
-  <!-- Modal -->
-  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="width: 100vw;height: 40vh;position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Login Form</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="exampleInputEmail1">Username</label>
-            <input type="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-            <small id="emailHelp" class="form-text text-muted">You must have an existing account here to login.</small>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="">Close</button>
-          <button type="button" class="btn btn-primary" onclick="">Login</button>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- Page Content -->
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h1 class="mt-5">Login to your existing account to view the homepage!</h1>
-        <p class="lead">We have run out of new usernames. Sorry, no new users!</p>
+        <form>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Code Input</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter code">
+            <small id="emailHelp" class="form-text text-muted">Enter a code for the secret.</small>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
       </div>
     </div>
   </div>
