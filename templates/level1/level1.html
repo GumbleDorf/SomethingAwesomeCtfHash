@@ -30,20 +30,41 @@
     </div>
   </nav>
   <!-- Page Content -->
-  <div class="container">
+  <div class="container" style="width: 100vw;height: 40vh;position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <form>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Code Input</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter code">
-            <small id="emailHelp" class="form-text text-muted">Enter a code for the secret.</small>
+        <div class="card">
+          <div class="card-header">
+            Code Verification
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+          <div class="card-body">
+            <p class="card-text"><form>
+              <div class="form-group">
+                <input type="text" class="form-control" id="codeIn" placeholder="Enter code">
+                <small id="help" class="form-text text-muted">Enter the secret code to complete level 1.</small>
+              </div>
+              <button type="submit" class="btn btn-primary" onclick="verifyCode()">Submit</button>
+            </form></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <script>
+    function verifyCode() {
+      let code = document.getElementById('codeIn').value
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", window.location.href + "/verify?code="+code, false ); // false for synchronous request
+      xmlHttp.send( null );
+      let res = JSON.parse(xmlHttp.responseText)
+      if (res.match === true) {
+        alert("Successful Match! Level 1 Completed, password was " + code)
+      } else {
+        alert("No Match!")
+      }
+    }
+  </script>
 
 
   <!-- Bootstrap core JS -->
