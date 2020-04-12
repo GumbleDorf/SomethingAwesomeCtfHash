@@ -54,7 +54,7 @@ def l1verify():
         #THIS IS PURPOSELY REALLY BAD CODE
         match = False
         for (a, b) in results:
-            if (a == "User554" and b == code):
+            if (a == "User554" and b == encodedcode):
                 match = True
         return {
             "match": match,
