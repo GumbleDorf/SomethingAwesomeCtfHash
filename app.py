@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from threading import Lock
-from start import level1Pass, level3Pass
+from start import level1Pass, level2Pass, level3Pass
 from encoding import caesar, randomNum
 import secrets
 import sqlite3
@@ -9,28 +9,6 @@ import string
 import os
 import random
 app = Flask(__name__)
-
-class TokenCache():
-    def __init__(self):
-        self.cache = {}
-        self.lock = Lock()
-    def addToCache(self, key):
-        self.lock.acquire()
-        if (key not in self.cache):
-            self.cache[key] = secrets.token_urlsafe()
-            self.lock.release()
-            return self.cache[key]
-        else:
-            self.lock.release()
-            raise Exception
-    def queryCache(self, key):
-        return self.cache[key]
-    def removeFromCache(self, key):
-        self.lock.acquire()
-        del self.cache[key]
-        self.lock.release()
-
-tokenCache = TokenCache()
 
 @app.route("/")
 def home():
@@ -186,3 +164,16 @@ def level3encrypt():
 @app.route("/level3")
 def level3():
     return render_template("level3/level3.html", encrypted=encrypt(level3Pass))
+
+@app.route("/codecheck", methods=['GET'])
+def codecheck():
+    level = request.args.get('level')
+    code = request.args.get('code')
+    match = False
+    if(level == 'level1' and code == level1Pass or 
+    level == 'level2' and code == level2Pass or
+    level == 'level3' and code == level3Pass):
+        match = True
+    return {
+        'match': match
+    }
