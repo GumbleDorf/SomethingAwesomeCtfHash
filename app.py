@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from threading import Lock
-from start import level1Pass, level2Pass, level3Pass
+from start import generateFlag
 from encoding import caesar, randomNum
 import secrets
 import sqlite3
@@ -163,17 +163,18 @@ def level3encrypt():
 
 @app.route("/level3")
 def level3():
-    return render_template("level3/level3.html", encrypted=encrypt(level3Pass))
+    return render_template("level3/level3.html", encrypted=encrypt(generateFlag(int(os.environ["l3Seed"]))))
 
 @app.route("/codecheck", methods=['GET'])
 def codecheck():
     level = request.args.get('level')
     code = request.args.get('code')
     match = False
-    if(level == 'level1' and code == level1Pass or 
-    level == 'level2' and code == level2Pass or
-    level == 'level3' and code == level3Pass):
+    if(level == 'level1' and code == generateFlag(int(os.environ["l1Seed"])) or 
+    level == 'level2' and code == generateFlag(int(os.environ["l2Seed"]))  or
+    level == 'level3' and code == generateFlag(int(os.environ["l3Seed"]))):
         match = True
     return {
         'match': match
     }
+

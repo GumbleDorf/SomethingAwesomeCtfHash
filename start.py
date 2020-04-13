@@ -3,25 +3,29 @@ import sqlite3
 from encoding import caesar
 import string
 import random
+import secrets
 
 os.environ["FLASK_APP"] = "app.py"
+
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(stringLength))
 
-level1Pass = "FLAG"+randomString(20)
-level2Pass = "FLAG"+randomString(20)
-level3Pass = "FLAG"+randomString(20)
+def generateFlag(n):
+    random.seed(n)
+    return "FLAG"+randomString(20)
+
+
 
 #DONT LOOK AT THIS FUNCTION YOU CHEATER, IT'LL RUIN EVERYTHING (unless you are on part 2, in which case its fair game)
-def startup():
+def startup(level1Pass, level2Pass, level3Pass):
     conn = sqlite3.connect('./templates/level1/data.db')
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS users")
     c.execute("CREATE TABLE users (username text, secret text)")
-    for (user, secret) in level1UserList():
+    for (user, secret) in level1UserList(level1Pass):
         c.execute("INSERT INTO users VALUES ('{}','{}')".format(user, secret))
     conn.commit()
     conn.close()
@@ -52,7 +56,7 @@ def startup():
 
 
 
-def level1UserList():
+def level1UserList(level1Pass):
     alphabets = (string.ascii_lowercase, string.ascii_uppercase, string.digits)
     return [("admin",caesar("SecretIsInUser554", len("SecretIsInUser554"), alphabets)), 
     ("User554",caesar(level1Pass, len(level1Pass), alphabets)), 
@@ -64,5 +68,11 @@ def level2UserList():
 
 
 if __name__ == "__main__":
-    startup()
+    l1Seed = secrets.randbelow(50000)
+    l2Seed = secrets.randbelow(50000)
+    l3Seed = secrets.randbelow(50000)
+    os.environ["l1Seed"] = str(l1Seed)
+    os.environ["l2Seed"] = str(l2Seed)
+    os.environ["l3Seed"] = str(l3Seed)
+    startup(generateFlag(l1Seed), generateFlag(l2Seed), generateFlag(l3Seed))
     os.system("flask run")
