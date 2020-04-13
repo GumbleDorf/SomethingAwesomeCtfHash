@@ -171,6 +171,7 @@ def level3encrypt():
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE username='"+username+"' AND password='"+password+"'")
     res = c.fetchall()
+    conn.close()
     if(len(res) != 1):
         return {
             "auth": False,

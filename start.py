@@ -44,7 +44,7 @@ def startup():
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS users")
     c.execute("CREATE TABLE users (username text, password text)")
-    for (user, password) in level2UserList():
+    for (user, password) in [("admin", randomString(100))]:
         c.execute("INSERT INTO users VALUES ('{}','{}')".format(user, password))
     conn.commit()
     conn.close()
