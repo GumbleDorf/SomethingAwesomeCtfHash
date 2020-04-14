@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Something Awesome CTF - RE</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Something Awesome CTF</a>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/level2">Home</a>
+          </li>
+          <li class="nav-item active" id="login">
+            <a class="nav-link" data-toggle="modal" data-target="#loginModal" href="">Login</a>
+          </li>
+          <li class="nav-item active" id="logout">
+            <a class="nav-link" data-toggle="modal" onclick="logout()">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="width: 100vw;height: 40vh;position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Login Form</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Username</label>
+            <input type="username" class="form-control" id="userform" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="passform" placeholder="Password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="">Close</button>
+          <button type="button" class="btn btn-primary" onclick="login()">Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center" id="mainpage">
+        <div id="notLogged">
+          <h1 class="mt-5">Login to your existing account to view the homepage!</h1>
+          <p class="lead">We have run out of single letter usernames. Sorry, no new users!</p>
+        </div>
+        <div id="feed" >
+          <div class="card">
+            <div class="card-header">
+              Make Post
+            </div>
+            <div class="card-body">
+              <p class="card-text"><form>
+                <label>Use our cool math feature to evaluate expressions like this {1+1}</label>
+                <div class="form-group">
+                  <textarea style="resize:none" id="postform" rows="4" cols="50"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="makePost()">Post</button>
+              </form></p>
+            </div>
+          </div>
+          <h1>Posts:</h1>
+          <ul id="posts">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      let password = document.getElementById('passform').value
+      let user = document.getElementById('userform').value
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", window.location.href + "/verify?user="+user+"&pass="+password, false ); // false for synchronous request
+      xmlHttp.send( null );
+      let res = JSON.parse(xmlHttp.responseText)
+      if (res.match === true && res.passwordMatch === true) {
+        setCookie('username', user, 365)
+        setCookie('loggedIn', "true", 365)
+        alert('Login Successful!')
+        populatePosts(user)
+      } else if (res.match === true && res.passwordMatch === false) {
+        alert("Password Incorrect!")
+      } else {
+        alert("Username Incorrect!")
+      }
+    }
+    function makePost() {
+      let user = getCookie('username')
+      let post = document.getElementById('postform').value
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", window.location.href + "/makepost?user="+user+"&post="+encodeURIComponent(post), false); // false for synchronous request
+      xmlHttp.send( null );
+      let res = JSON.parse(xmlHttp.responseText)
+    }
+    function populatePosts(user) {
+      document.getElementById("feed").style.display = "block";
+      document.getElementById("notLogged").style.display = "none";
+      document.getElementById("login").style.display = "none";
+      document.getElementById("logout").style.display = "block";
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", window.location.href + "/posts?user="+user, false); // false for synchronous request
+      xmlHttp.send( null );
+      let res = JSON.parse(xmlHttp.responseText)
+      for(let i in res.posts) {
+        let node = document.createElement("li");
+        let textnode = document.createTextNode(res.posts[i]); 
+        node.appendChild(textnode)
+        document.getElementById('posts').appendChild(node)
+      }
+    }
+
+    function logout() {
+        setCookie("loggedIn", "false", 365)
+        setCookie("user", "", 365)
+        showUnlogged()
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires="+d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function showUnlogged() {
+      document.getElementById("feed").style.display = "none";
+      document.getElementById("notLogged").style.display = "block";
+      document.getElementById("logout").style.display = "none";
+      document.getElementById("login").style.display = "block";
+    }
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    if(getCookie('loggedIn') == "true") {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", window.location.href + "/verify?user="+getCookie('username'), false ); // false for synchronous request
+      xmlHttp.send( null );
+      let res = JSON.parse(xmlHttp.responseText)
+      if (res.match === true) {
+        populatePosts(getCookie('username'))
+      } else {
+        showUnlogged()
+      }
+    } else {
+      showUnlogged()
+    }
+  </script>
+
+
+  <!-- Bootstrap core JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+ 
+
+</body>
+
+</html>
